@@ -7,20 +7,23 @@ import android.util.Log
 import android.widget.Button
 
 class MainActivity : AppCompatActivity() {
-    private val soundPlayer by lazy {
-        SoundPlayer(this)
-    }
+    private var soundPlayer:SoundPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        soundPlayer =  SoundPlayer(this)
 
         findViewById<Button>(R.id.btnMediaPlayStartSound).setOnClickListener {
-            soundPlayer.play(SoundPlayer.Type.MediaPlayer)
+            soundPlayer?.play(SoundPlayer.Type.MediaPlayer)
         }
 
         findViewById<Button>(R.id.btnSoundPoolStartSound).setOnClickListener {
-            soundPlayer.play(SoundPlayer.Type.SoundPool)
+            soundPlayer?.play(SoundPlayer.Type.SoundPool)
+        }
+
+        findViewById<Button>(R.id.btnRingtoneManagerStartSound).setOnClickListener {
+            soundPlayer?.play(SoundPlayer.Type.RingtoneManager)
         }
     }
 

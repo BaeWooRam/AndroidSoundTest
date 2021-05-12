@@ -1,9 +1,8 @@
 package com.example.soundtest
 
 import android.content.Context
-import android.media.AudioAttributes
-import android.media.MediaPlayer
-import android.media.SoundPool
+import android.media.*
+import android.net.Uri
 import android.util.Log
 
 /**
@@ -11,29 +10,37 @@ import android.util.Log
  */
 class SoundPlayer(private val context: Context) {
     enum class Type{
-        SoundPool, MediaPlayer
+        SoundPool, MediaPlayer, RingtoneManager
     }
 
     private val soundPool: SoundPool
     private val mediaPlayer:MediaPlayer
+    private val ringtone:Ringtone
+
+    private val soundUri:Uri
 
     init {
+        //SoundPool
         soundPool = SoundPool.Builder().setAudioAttributes(getDefaultAudioAttributes()).build()
-        mediaPlayer = MediaPlayer.create(context, SOUND)
         initDefaultLoadCompleteListener()
+
+        //MediaPlayer
+        mediaPlayer = MediaPlayer.create(context, SOUND_ID)
+
+        //RingtoneManager
+        val packageName = context.packageName
+        val uriPath = "android.resource://$packageName/raw/$SOUND_FILE_NAME"
+        Log.d(TAG, "UriPath = $uriPath")
+        soundUri = Uri.parse(uriPath)
+        ringtone = RingtoneManager.getRingtone(context, soundUri)
     }
 
-    /**
-     * 기본 AudioAttributes 세팅
-     */
+
     private fun getDefaultAudioAttributes(): AudioAttributes = AudioAttributes.Builder()
         .setUsage(AudioAttributes.USAGE_GAME)
         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
         .build()
 
-    /**
-     * 기본 LoadCompleteListener 세팅
-     */
     private fun initDefaultLoadCompleteListener(){
         soundPool.setOnLoadCompleteListener{ soundPool, sampleId, status ->
             when(status){
@@ -47,6 +54,7 @@ class SoundPlayer(private val context: Context) {
             }
         }
     }
+
 
     /**
      * soundPool.load 실행
@@ -68,15 +76,29 @@ class SoundPlayer(private val context: Context) {
             }
 
             Type.SoundPool -> {
-                val soundId = soundPool.load(context, SOUND, 1)
+                val soundId = soundPool.load(context, SOUND_ID, 1)
                 Log.d(TAG, "SoundPool play() soundId = $soundId")
+            }
+
+            Type.RingtoneManager -> {
+                val isPlaying = ringtone.isPlaying
+
+                if(!isPlaying){
+                    Log.d(TAG, "RingtoneManager isPlaying = $isPlaying, play()")
+                    ringtone.play()
+                }else{
+                    Log.d(TAG, "RingtoneManager isPlaying = $isPlaying, Restart play()")
+                    ringtone.stop()
+                    ringtone.play()
+                }
             }
         }
     }
 
     companion object {
         const val TAG = "SoundPlayer"
-        const val SOUND = R.raw.sound
+        const val SOUND_ID = R.raw.sound
+        const val SOUND_FILE_NAME = "sound.mp3"
         const val STATUS_PLAY_SOUND_SUCCESS = 0
     }
 }
