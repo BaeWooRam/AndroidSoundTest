@@ -15,8 +15,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        findViewById<Button>(R.id.btnStartSound).setOnClickListener {
-            soundPlayer.play()
+        findViewById<Button>(R.id.btnMediaPlayStartSound).setOnClickListener {
+            soundPlayer.play(SoundPlayer.Type.MediaPlayer)
+        }
+
+        findViewById<Button>(R.id.btnSoundPoolStartSound).setOnClickListener {
+            soundPlayer.play(SoundPlayer.Type.SoundPool)
         }
     }
 

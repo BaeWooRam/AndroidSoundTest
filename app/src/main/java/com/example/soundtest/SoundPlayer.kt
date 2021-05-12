@@ -2,6 +2,7 @@ package com.example.soundtest
 
 import android.content.Context
 import android.media.AudioAttributes
+import android.media.MediaPlayer
 import android.media.SoundPool
 import android.util.Log
 
@@ -9,10 +10,16 @@ import android.util.Log
  * SoundPool를 이용한 간단한 소리 재생
  */
 class SoundPlayer(private val context: Context) {
+    enum class Type{
+        SoundPool, MediaPlayer
+    }
+
     private val soundPool: SoundPool
+    private val mediaPlayer:MediaPlayer
 
     init {
         soundPool = SoundPool.Builder().setAudioAttributes(getDefaultAudioAttributes()).build()
+        mediaPlayer = MediaPlayer.create(context, SOUND)
         initDefaultLoadCompleteListener()
     }
 
@@ -44,9 +51,27 @@ class SoundPlayer(private val context: Context) {
     /**
      * soundPool.load 실행
      */
-    fun play() {
-        val soundId = soundPool.load(context, SOUND, 1)
-        Log.d(TAG, "play() soundId = $soundId")
+    fun play(type:Type) {
+        when(type){
+            Type.MediaPlayer -> {
+                val isPlaying = mediaPlayer.isPlaying
+
+                if(!isPlaying) {
+                    Log.d(TAG, "MediaPlayer isPlaying = $isPlaying, play()")
+                    mediaPlayer.start()
+                }else {
+                    Log.d(TAG, "MediaPlayer isPlaying = $isPlaying, Restart play()")
+                    mediaPlayer.stop()
+                    mediaPlayer.prepare()
+                    mediaPlayer.start()
+                }
+            }
+
+            Type.SoundPool -> {
+                val soundId = soundPool.load(context, SOUND, 1)
+                Log.d(TAG, "SoundPool play() soundId = $soundId")
+            }
+        }
     }
 
     companion object {
