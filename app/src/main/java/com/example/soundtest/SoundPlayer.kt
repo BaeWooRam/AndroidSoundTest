@@ -29,7 +29,7 @@ class SoundPlayer(private val context: Context) {
 
         //RingtoneManager
         val packageName = context.packageName
-        val uriPath = "android.resource://$packageName/raw/$SOUND_FILE_NAME"
+        val uriPath = "android.resource://$packageName/$SOUND_ID"
         Log.d(TAG, "UriPath = $uriPath")
         soundUri = Uri.parse(uriPath)
         ringtone = RingtoneManager.getRingtone(context, soundUri)
@@ -98,7 +98,6 @@ class SoundPlayer(private val context: Context) {
     companion object {
         const val TAG = "SoundPlayer"
         const val SOUND_ID = R.raw.sound
-        const val SOUND_FILE_NAME = "sound.mp3"
         const val STATUS_PLAY_SOUND_SUCCESS = 0
     }
 }
