@@ -1,9 +1,7 @@
 package com.example.soundtest
 
-import android.media.SoundPool
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 
 class MainActivity : AppCompatActivity() {
@@ -15,15 +13,15 @@ class MainActivity : AppCompatActivity() {
         soundPlayer =  SoundPlayer(this)
 
         findViewById<Button>(R.id.btnMediaPlayStartSound).setOnClickListener {
-            soundPlayer?.play(SoundPlayer.Type.MediaPlayer)
+            soundPlayer?.play(SoundPlayer.PlayType.MediaPlayer)
         }
 
         findViewById<Button>(R.id.btnSoundPoolStartSound).setOnClickListener {
-            soundPlayer?.play(SoundPlayer.Type.SoundPool)
+            soundPlayer?.play(SoundPlayer.PlayType.SoundPool)
         }
 
         findViewById<Button>(R.id.btnRingtoneManagerStartSound).setOnClickListener {
-            soundPlayer?.play(SoundPlayer.Type.RingtoneManager)
+            soundPlayer?.play(SoundPlayer.PlayType.RingtoneManager)
         }
     }
 
