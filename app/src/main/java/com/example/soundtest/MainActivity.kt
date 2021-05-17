@@ -2,27 +2,63 @@ package com.example.soundtest
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 
 class MainActivity : AppCompatActivity() {
     private var soundPlayer:SoundPlayer? = null
+    private var isStart = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        soundPlayer =  SoundPlayer(this)
 
         findViewById<Button>(R.id.btnMediaPlayStartSound).setOnClickListener {
-            soundPlayer?.play(SoundPlayer.PlayType.MediaPlayer)
+            Log.d(TAG, "btnMediaPlayStartSound click isStart = $isStart")
+            isStart = if(!isStart) {
+                soundPlayer?.play(SoundPlayer.PlayType.MediaPlayer)
+                true
+            }else{
+                soundPlayer?.stop(SoundPlayer.PlayType.MediaPlayer)
+                false
+            }
+
         }
 
         findViewById<Button>(R.id.btnSoundPoolStartSound).setOnClickListener {
-            soundPlayer?.play(SoundPlayer.PlayType.SoundPool)
+            Log.d(TAG, "btnSoundPoolStartSound click isStart = $isStart")
+            isStart = if(!isStart) {
+                soundPlayer?.play(SoundPlayer.PlayType.SoundPool)
+                true
+            }else{
+                soundPlayer?.stop(SoundPlayer.PlayType.SoundPool)
+                false
+            }
         }
 
         findViewById<Button>(R.id.btnRingtoneManagerStartSound).setOnClickListener {
-            soundPlayer?.play(SoundPlayer.PlayType.RingtoneManager)
+            Log.d(TAG, "btnRingtoneManagerStartSound click isStart = $isStart")
+            isStart = if(!isStart) {
+                soundPlayer?.play(SoundPlayer.PlayType.RingtoneManager)
+                true
+            }else{
+                soundPlayer?.stop(SoundPlayer.PlayType.RingtoneManager)
+                false
+            }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d(TAG, "onStart : SoundPlayer init()")
+        soundPlayer =  SoundPlayer(this)
+        soundPlayer?.init()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "onStop : SoundPlayer clear()")
+        soundPlayer?.clear()
     }
 
     companion object{
