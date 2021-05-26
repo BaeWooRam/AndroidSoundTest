@@ -45,7 +45,10 @@ class SoundPlayer(private val context: Context) {
     private var isInitRingtoneManger = false
 
     var isLoop = true
+    var isPlay = false
+    var isPrepare = false
     var vibrate: LongArray? = DEFAULT_VIBRATE
+    var mode: Int = AudioManager.RINGER_MODE_NORMAL
 
     fun init() {
         if (!isInitMediaPlayer)
@@ -61,15 +64,28 @@ class SoundPlayer(private val context: Context) {
     private fun initMediaPlayer() {
         mediaPlayer = MediaPlayer.create(context, SOUND_ID)
         mediaPlayer?.isLooping = isLoop
-        /*  mediaPlayer?.setOnPreparedListener {
-              Log.d(TAG, "MediaPlayer OnPreparedListener start!")
-              it.start()
-          }
-          mediaPlayer?.setOnErrorListener { mp, what, extra ->
-              Log.d(TAG, "MediaPlayer OnErrorListener start!")
 
-              return@setOnErrorListener false
-          }*/
+        /*
+        //미디어 소스가 재생 준비가되었을 때 호출 될 콜백에 대한 인터페이스 정의입니다.
+        mediaPlayer?.setOnPreparedListener {
+            Log.d(TAG, "MediaPlayer OnPreparedListener start!")
+            isPrepare = true
+        }
+
+        //미디어 소스 재생이 완료되었을 때 호출 할 콜백에 대한 인터페이스 정의입니다.
+        mediaPlayer?.setOnCompletionListener {
+            Log.d(TAG, "MediaPlayer OnCompletionListener start!")
+            it.start()
+        }
+
+        //비동기 작업 중에 오류가 발생했을 때 호출 될 콜백의 인터페이스 정의입니다 (다른 오류는 메서드 호출시 예외를 발생시킵니다).
+        mediaPlayer?.setOnErrorListener { mp, what, extra ->
+            Log.d(TAG, "MediaPlayer OnErrorListener start!")
+            isPrepare = false
+            isPlay = false
+            return@setOnErrorListener false
+        }*/
+
         isInitMediaPlayer = true
     }
 
@@ -121,7 +137,10 @@ class SoundPlayer(private val context: Context) {
      * RingerMode과 PlayType에 따른 사운드 정지한다
      */
     fun stop(playType: PlayType) {
-        val mode = getPhoneRingerMode()
+        isPlay = false
+        isPrepare = false
+
+        mode = getPhoneRingerMode()
         Log.d(TAG, "stop mode = $mode, type = ${playType.name}")
 
         when (mode) {
@@ -164,10 +183,12 @@ class SoundPlayer(private val context: Context) {
      * RingerMode과 PlayType에 따른 사운드 재생한다
      */
     fun play(playType: PlayType) {
+        isPlay = true
+
         if (!isInitRingtoneManger || !isInitSoundPool || !isInitMediaPlayer)
             throw NotInitSoundPlayerException()
 
-        val mode = getPhoneRingerMode()
+        mode = getPhoneRingerMode()
         Log.d(TAG, "play mode = $mode, type = ${playType.name}")
 
         when (mode) {
@@ -271,7 +292,8 @@ class SoundPlayer(private val context: Context) {
 
     companion object {
         const val TAG = "SoundPlayer"
-//        var SOUND_ID: Int? = null
+
+        //        var SOUND_ID: Int? = null
         const val SOUND_ID = R.raw.sound
         const val STATUS_PLAY_SOUND_SUCCESS = 0
         val DEFAULT_VIBRATE = longArrayOf(0L, 1000L, 500L, 1000L)
